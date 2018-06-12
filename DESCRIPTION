@@ -1,0 +1,30 @@
+Package: provision
+Title: Statistical Models for Claim Reserving
+Version: 0.1.0
+Authors@R: c(
+  person("Albert", "Canadell", email = "acanadis@gmail.com", role = c("aut", "cre")),
+  person("Eva", "Boj", role = c("aut", "ths")),
+  person("Teresa", "Costa", role = c("aut", "ths"))
+  )
+Description: Models used to solve the claim reserving problem.
+Depends: R (>= 3.4.3)
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+URL: https://github.com/acanadis/provision
+BugReports: https://github.com/acanadis/provision/issues
+RoxygenNote: 6.0.1
+Collate:
+    'utilities.R'
+    'PDR.R'
+    'TaylorData.R'
+    'glmProvision.R'
+    'pV.R'
+    'plot_sepprov.R'
+    'separateProvision.R'
+Imports: statmod,
+    methods,
+    tweedie,
+    xtable,
+    dplyr,
+    reshape2
