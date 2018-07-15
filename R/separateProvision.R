@@ -56,8 +56,8 @@ separateProvision <- function(lossData, freqData,
   t <- nrow(lossData)
   oy <- rep(1:t,t:1)
   dy <- sequence(t:1)
-  labelsoy <- paste0("oy", 1:t)
-  labelsdy <- paste0("dy", 1:t)
+  labelsoy <- paste0("oy", 0:(t-1))
+  labelsdy <- paste0("dy", 0:(t-1))
   colnames(lossData) <- labelsdy
   rownames(lossData) <- labelsoy
 
@@ -74,8 +74,8 @@ separateProvision <- function(lossData, freqData,
                                  rep(times = i-1, NA))
   }
 
-  labelsoy <- paste0("oy", 1:t)
-  labelsdy <- paste0("dy", 1:t)
+  labelsoy <- paste0("oy", 0:(t-1))
+  labelsdy <- paste0("dy", 0:(t-1))
   colnames(m.average.loss.data) <- labelsdy
   rownames(m.average.loss.data) <- labelsoy
 
@@ -461,6 +461,7 @@ separateProvision <- function(lossData, freqData,
                               "fpv" = fpv,
                               "fpvfutureboot" = fpvfutureboot,
                               "increm.tri" = increm.tri,
+                              "triangboot" = triangboot,
                               "lambdafut" = lambdafut))
   }
   if (modelSep == "geometric"){
@@ -479,6 +480,7 @@ separateProvision <- function(lossData, freqData,
                               "fpv" = fpv,
                               "fpvfutureboot" = fpvfutureboot,
                               "increm.tri" = increm.tri,
+                              "triangboot" = triangboot,
                               "lambdafut" = lambdafut))
   }
   class(res) <- "sepprov"
