@@ -1,7 +1,9 @@
 #' @name separateProvision
 #' @title Calculate provisions using separation methods of Taylor.
 #' @description Calculate provisions using separation methods of Taylor.
-#' @usage separateProvision(lossData, freqData, modelSep = "arithmetic", lambdaK = 0, B = 1000, seed = NULL)
+#' @usage separateProvision(lossData, freqData,
+#' modelSep = "arithmetic", lambdaK = 0,
+#' B = 1000, seed = NULL)
 #' @param lossData Matrix of incremental losses \eqn{Cij},
 #' for \eqn{i = 1,...,t} origin years (rows) and for \eqn{j = 1,...,t}
 #' development years (columns); filled with \code{NAs} for \eqn{i + j > t}.

@@ -4,7 +4,7 @@
 \alias{PDR}
 \title{Claim development results.}
 \usage{
-PDR(object, probs = c(0.75, 0.95, 0.99))
+PDR(object, probs = c(0.75, 0.95, 0.995))
 }
 \arguments{
 \item{object}{Output from \code{separateProvision} or \code{glmProvision} functions.}

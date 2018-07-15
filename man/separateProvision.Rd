@@ -3,6 +3,11 @@
 \name{separateProvision}
 \alias{separateProvision}
 \title{Calculate provisions using separation methods of Taylor.}
+\usage{
+separateProvision(lossData, freqData,
+modelSep = "arithmetic", lambdaK = 0,
+B = 1000, seed = NULL)
+}
 \arguments{
 \item{lossData}{Matrix of incremental losses \eqn{Cij},
 for \eqn{i = 1,...,t} origin years (rows) and for \eqn{j = 1,...,t}
@@ -11,11 +16,11 @@ development years (columns); filled with \code{NAs} for \eqn{i + j > t}.}
 \item{freqData}{Vector with the claim numbers by origin year \eqn{i}
 for \eqn{i = 1,...t}.}
 
-\item{modelSep}{Model to be used, can be \code{arithmetic} or \code{geometric}.}
+\item{modelSep}{Model to be used, can be \code{arithmetic} or \code{geometric}. Defaults to "arithmetic".}
 
-\item{lambdaK}{Percentage of the trend in the inflation index.}
+\item{lambdaK}{Percentage of the trend in the inflation index. Defaults to 0.}
 
-\item{B}{Number of iterations to perform in the bootstrapping procedure.}
+\item{B}{Number of iterations to perform in the bootstrapping procedure. Defaults to 1000.}
 
 \item{seed}{Seed to make bootstrap reproducible.}
 }

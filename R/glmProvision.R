@@ -1,7 +1,8 @@
 #' @name glmProvision
 #' @title Calculate provisions using glm modeling.
 #' @description Calculate provision using glm modeling.
-#' @usage glmProvision(lossData, peMethod = "formula", fam = 1, link = 0, B = 1000, seed = NULL)
+#' @usage glmProvision(lossData, peMethod = "formula",
+#' fam = 1, link = 0, B = 1000, seed = NULL)
 #' @param lossData Matrix of incremental losses \eqn{Cij},
 #' for \eqn{i = 1,...,t} origin years (rows) and for \eqn{j = 1,...,t}
 #' development years (columns); filled with \code{NAs} for \eqn{i + j > t}.
