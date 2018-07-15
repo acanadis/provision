@@ -1,13 +1,14 @@
 #' @name glmProvision
 #' @title Calculate provisions using glm modeling.
 #' @description Calculate provision using glm modeling.
+#' @usage glmProvision(lossData, peMethod = "formula", fam = 1, link = 0, B = 1000, seed = NULL)
 #' @param lossData Matrix of incremental losses \eqn{Cij},
 #' for \eqn{i = 1,...,t} origin years (rows) and for \eqn{j = 1,...,t}
 #' development years (columns); filled with \code{NAs} for \eqn{i + j > t}.
-#' @param peMethod Method to be used, can be \code{formula} or \code{bootstrap}.
-#' @param fam Index of power variance function as defined in \code{tweedie}. Defaults to normal.
-#' @param link Index of power link function as defined in \code{tweedie}. Defaults to log-link.
-#' @param B Number of iterations to perform in the bootstrapping procedure.
+#' @param peMethod Method to be used, can be \code{formula} or \code{bootstrap}. Defaults to "formula".
+#' @param fam Index of power variance function as defined in \code{tweedie}. Defaults to Poisson.
+#' @param link Index of power link function as defined in \code{tweedie}. Defaults to logarithmic link.
+#' @param B Number of iterations to perform in the bootstrapping procedure. Defaults to 1000.
 #' @param seed Seed to make bootstrap reproducible.
 #' @return A list of 5 elements with:
 #' \itemize{
@@ -310,8 +311,8 @@ glmProvision <- function(lossData,
                      quantile(sum(reservesorig), 0.75, na.rm = TRUE))
     out.sum[, 9] <- c(0, apply(reservesorig, 2, quantile, 0.95, na.rm = TRUE),
                       quantile(sum(reservesorig), 0.95, na.rm = TRUE))
-    out.sum[, 10] <- c(0, apply(reservesorig, 2, quantile, 0.99, na.rm = TRUE),
-                      quantile(sum(reservesorig), 0.99, na.rm = TRUE))
+    out.sum[, 10] <- c(0, apply(reservesorig, 2, quantile, 0.995, na.rm = TRUE),
+                      quantile(sum(reservesorig), 0.995, na.rm = TRUE))
     out.sum[is.nan(out.sum)] <- 0
 
     ## Calendar year
@@ -329,8 +330,8 @@ glmProvision <- function(lossData,
                      quantile(sum(reservescal), 0.75, na.rm = TRUE))
   out.sum2[, 6] <- c(apply(reservescal, 2, quantile, 0.95, na.rm = TRUE),
                      quantile(sum(reservescal), 0.95, na.rm = TRUE))
-  out.sum2[, 7] <- c(apply(reservescal, 2, quantile, 0.99, na.rm = TRUE),
-                     quantile(sum(reservescal), 0.99, na.rm = TRUE))
+  out.sum2[, 7] <- c(apply(reservescal, 2, quantile, 0.995, na.rm = TRUE),
+                     quantile(sum(reservescal), 0.995, na.rm = TRUE))
 
   out.sum2[is.nan(out.sum2)] <- 0
   }

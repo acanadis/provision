@@ -1,6 +1,7 @@
 #' @name pV
 #' @title Present value of the future payments vector.
 #' @description Calculate the present value of the future payments vector.
+#' @usage pV(object, yieldCurve)
 #' @param object Output from \code{separateProvision} or \code{glmProvision} functions.
 #' @param yieldCurve Vector with the interest rate for the following years.
 #' @return A list of 4 elements with:

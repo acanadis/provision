@@ -1,14 +1,15 @@
 #' @name separateProvision
 #' @title Calculate provisions using separation methods of Taylor.
 #' @description Calculate provisions using separation methods of Taylor.
+#' @usage separateProvision(lossData, freqData, modelSep = "arithmetic", lambdaK = 0, B = 1000, seed = NULL)
 #' @param lossData Matrix of incremental losses \eqn{Cij},
 #' for \eqn{i = 1,...,t} origin years (rows) and for \eqn{j = 1,...,t}
 #' development years (columns); filled with \code{NAs} for \eqn{i + j > t}.
 #' @param freqData Vector with the claim numbers by origin year \eqn{i}
 #' for \eqn{i = 1,...t}.
-#' @param modelSep Model to be used, can be \code{arithmetic} or \code{geometric}.
-#' @param lambdaK Percentage of the trend in the inflation index.
-#' @param B Number of iterations to perform in the bootstrapping procedure.
+#' @param modelSep Model to be used, can be \code{arithmetic} or \code{geometric}. Defaults to "arithmetic".
+#' @param lambdaK Percentage of the trend in the inflation index. Defaults to 0.
+#' @param B Number of iterations to perform in the bootstrapping procedure. Defaults to 1000.
 #' @param seed Seed to make bootstrap reproducible.
 #' @return A list of 5 elements with:
 #' \itemize{
@@ -419,8 +420,8 @@ separateProvision <- function(lossData, freqData,
                     quantile(totresboot, 0.75))
   out.sum[, 9] <- c(0, apply(oyresboot, 2, quantile, 0.95),
                     quantile(totresboot, 0.95))
-  out.sum[, 10] <- c(0, apply(oyresboot, 2, quantile, 0.99),
-                     quantile(totresboot, 0.99))
+  out.sum[, 10] <- c(0, apply(oyresboot, 2, quantile, 0.995),
+                     quantile(totresboot, 0.995))
   out.sum[is.nan(out.sum)] <- 0
 
   # 8.2. Summary - CY ----
@@ -438,8 +439,8 @@ separateProvision <- function(lossData, freqData,
                      quantile(totresfutureboot, 0.75, na.rm = TRUE))
   out.sum2[, 6] <- c(apply(fpvfutureboot, 2, quantile, 0.95, na.rm = TRUE),
                      quantile(totresfutureboot, 0.95, na.rm = TRUE))
-  out.sum2[, 7] <- c(apply(fpvfutureboot, 2, quantile, 0.99, na.rm = TRUE),
-                     quantile(totresfutureboot, 0.99, na.rm = TRUE))
+  out.sum2[, 7] <- c(apply(fpvfutureboot, 2, quantile, 0.995, na.rm = TRUE),
+                     quantile(totresfutureboot, 0.995, na.rm = TRUE))
 
   out.sum2[is.nan(out.sum2)] <- 0
 

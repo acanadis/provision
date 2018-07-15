@@ -1,6 +1,7 @@
 #' @name PDR
 #' @title Claim development results.
 #' @description Calculate claim development results.
+#' @usage PDR(object, probs = c(0.75, 0.95, 0.995))
 #' @param object Output from \code{separateProvision} or \code{glmProvision} functions.
 #' @param probs Quantiles of the CDR distribution.
 #' @return A list of 6 elements with:
@@ -20,7 +21,7 @@
 #' @importFrom stats quantile
 #' @include utilities.R
 
-PDR <- function(object, probs = c(0.75, 0.95, 0.99)){
+PDR <- function(object, probs = c(0.75, 0.95, 0.995)){
   # 1. Check input ----
   if (!(class(object) %in% c("glmprov", "sepprov"))){
     stop(paste0("Object is not an output from either 'glmProvision' or",
