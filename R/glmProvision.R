@@ -281,7 +281,7 @@ glmProvision <- function(lossData,
     out.sum <- matrix(NA, ncol = 10, nrow = t+1,
                       dimnames = list(c(rownames(lossData), "TOTAL"),
                                       c("Latest.mean", "dev.to.date", "Ultimate.mean",
-                                        "IBNR", "IBNR.mean", "PredErr.Abs", "CV",
+                                        "IBNR", "IBNR.mean", "PredErr", "CV",
                                         "IBNR.quantile.75", "IBNR.quantile.95",
                                         "IBNR.quantile.99")))
 
@@ -304,7 +304,7 @@ glmProvision <- function(lossData,
 
     out.sum[, 4] <- c(0, oyres, sum(oyres))
     out.sum[, 5] <- c(0, apply(reservesorig,2,mean), sum(apply(reservesorig,2,mean)))
-    out.sum[, 6] <- c(0, abs(PEbsorig), sum(abs(PEbsorig)))
+    out.sum[, 6] <- c(0, abs(PEbsorig), PEbs)
     out.sum[, 7] <- out.sum[,6]/out.sum[,4]
     out.sum[, 8] <- c(0, apply(reservesorig, 2, quantile, 0.75, na.rm = TRUE),
                      quantile(sum(reservesorig), 0.75, na.rm = TRUE))
@@ -318,7 +318,7 @@ glmProvision <- function(lossData,
     labelscy <- paste0("cy", (t+1):(t+ncol(lossData)-1))
     out.sum2 <- matrix(NA, ncol = 7, nrow = t,
                        dimnames = list(c(labelscy, "TOTAL.cy"),
-                                       c("IBNR", "IBNR.mean", "PredErr.Abs", "CV",
+                                       c("IBNR", "IBNR.mean", "PredErr", "CV",
                                          "IBNR.quantile.75", "IBNR.quantile.95",
                                          "IBNR.quantile.99")))
   out.sum2[, 1] <- c(fpv, sum(fpv))
@@ -343,7 +343,7 @@ glmProvision <- function(lossData,
     out.sum <- matrix(NA, ncol = 6, nrow = t+1,
                       dimnames = list(c(rownames(lossData), "TOTAL"),
                                       c("Latest", "dev.to.date", "Ultimate",
-                                        "IBNR", "IBNR.PredErr.Abs", "CV")))
+                                        "IBNR", "IBNR.PredErr", "CV")))
     ## Latest
     out.sum[, 1] <- c(ObtainMDiagonal(increm.tri[, ,1]),
                       sum(ObtainMDiagonal(increm.tri[, , 1])))
@@ -355,7 +355,7 @@ glmProvision <- function(lossData,
     ## IBNR
     out.sum[, 4] <- c(0, oyres, totres)
     ## PE
-    out.sum[, 5] <- c(0, abs(PEfororig), sum(abs(PEfororig)))
+    out.sum[, 5] <- c(0, abs(PEfororig), PEfor)
     ## CV
     out.sum[, 6] <- out.sum[, 5]/out.sum[, 4]
     out.sum[is.nan(out.sum)] <- 0
@@ -364,7 +364,7 @@ glmProvision <- function(lossData,
     labelscy <- paste0("cy", (t+1):(t+ncol(lossData)-1))
     out.sum2 <- matrix(NA, ncol = 3, nrow = t,
                        dimnames = list(c(labelscy, "TOTAL.cy"),
-                                       c("IBNR", "PredErr.Abs", "CV")))
+                                       c("IBNR", "PredErr", "CV")))
     ## IBNR
     out.sum2[, 1] <- c(fpv, sum(fpv))
     ## Pred. Error

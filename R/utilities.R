@@ -231,7 +231,7 @@ summary.glmprov <- function(object, output = "console", ...){
                                      ifelse(object$params$fam == "3",
                                             "Inverse gaussian",
                                             paste0("variance power ", object$params$fam))))))
-  link <- ifelse(object$params$link == 0, "logit", object$params$link)
+  link <- ifelse(object$params$link == 0, "logarithmic", object$params$link)
   if (output == "console"){
     cat("==== Summary of glmProvision ====\n\n")
     cat(paste0("peMethod = ", object$params$method,"\n"))

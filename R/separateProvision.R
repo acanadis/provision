@@ -343,7 +343,7 @@ separateProvision <- function(lossData, freqData,
       for (i in 1:nrow(triangglmboot)){
         for (j in 1:ncol(triangglmboot)){
           if ((i+j-1) == a){
-            aux <- sum(aux, triangglmboot[i, j, boots], na.rm = TRUE)
+            aux <- sum(aux, m.bootfutureData[i, j, boots], na.rm = TRUE)
           }
         }
       }
