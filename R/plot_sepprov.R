@@ -9,7 +9,7 @@
 #' @importFrom graphics boxplot hist par points
 #' @include utilities.R
 
-plot_sepprov <- function(object, ...){
+plot_sepprov <- function(object, log = FALSE, ...){
   par(mfrow = c(2,2))
   # Histogram - IBNR
   sum.test <- NULL
@@ -33,26 +33,29 @@ plot_sepprov <- function(object, ...){
   }
   aux <- reshape2::melt(latest)
   colnames(aux) <- c("B", "oy", "latest")
+  aux$oy <- aux$oy-1
   aux$oy <- factor(aux$oy)
+
+  aux.pt <- data.frame(Value = ObtainMDiagonal(object$triangle),
+                       Index = c(1:(ncol(object$triangle))),
+                       stringsAsFactors = FALSE)
   if (log == TRUE){
     aux$latest <- log(aux$latest)
+    aux.pt$Value  <- log(aux.pt$Value)
+
+    ylims <- c(min(aux$latest, aux.pt$Value), max(aux$latest, aux.pt$Value))
     boxplot(aux$latest ~ aux$oy,
             main = "Latest actual incremental claim against simulated values",
             xlab = "Origin year", ylab = "log(Latest incremental claims)",
-            pch = 20, border = "grey", outline = FALSE)
+            ylim = ylims, pch = 20, border = "grey", outline = FALSE)
   } else {
+    ylims <- c(min(aux$latest, aux.pt$Value), max(aux$latest, aux.pt$Value))
     boxplot(aux$latest ~ aux$oy,
             main = "Latest actual incremental claim against simulated values",
             xlab = "Origin year", ylab = "Latest incremental claims",
-            pch = 20, border = "grey", outline = FALSE)
+            ylim = ylims, pch = 20, border = "grey", outline = FALSE)
   }
-  aux <- data.frame(Value = ObtainMDiagonal(object$triangle),
-                    Index = c(0:(ncol(object$triangle)-1)),
-                    stringsAsFactors = FALSE)
-  if (log == TRUE) {
-    aux$Value  <- log(aux$Value)
-  }
-  points(x = aux$Index, y = aux$Value, type = "p", pch = 20, col = "red")
+  points(x = aux.pt$Index, y = aux.pt$Value, type = "p", pch = 20, col = "red")
   rm(latest, i, aux)
 
   # Boxplot - Ultimate
@@ -63,6 +66,7 @@ plot_sepprov <- function(object, ...){
   }
   aux <- reshape2::melt(ultimate)
   colnames(aux) <- c("B", "oy", "ultimate")
+  aux$oy <- aux$oy - 1
   aux$oy <- factor(aux$oy)
   auxoy <- aux %>% dplyr::group_by(oy) %>% dplyr::summarise(mu = mean(ultimate))
   boxplot(aux$ultimate ~ aux$oy,
@@ -74,7 +78,7 @@ plot_sepprov <- function(object, ...){
 
   # Boxplot - FPV - CY
   aux <- object$params$fpvfutureboot
-  colnames(aux) <- c(as.numeric(colnmes(aux) + ncol(object$params$increm.tri)))
+  colnames(aux) <- c(as.numeric(colnames(aux) + ncol(object$params$increm.tri)))
   boxplot(aux,
           main = "Actual future payments per calendar year against simulated values",
           xlab = "Calendar year", ylab = "Future payments",
