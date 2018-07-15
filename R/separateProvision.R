@@ -336,14 +336,14 @@ separateProvision <- function(lossData, freqData,
     # Total reserve
     totresfutureboot[boots] <- sum(oyresfutureboot[boots, ])
     # Vector of future payments
-    a <- ncol(triangglmboot) + 1
+    a <- ncol(m.bootfutureData) + 1
     fpv2 <- NULL
-    for (z in 1:(nrow(triangglmboot)-1)){
+    for (z in 1:(nrow(m.bootfutureData)-1)){
       aux <- 0
-      for (i in 1:nrow(triangglmboot)){
-        for (j in 1:ncol(triangglmboot)){
+      for (i in 1:nrow(m.bootfutureData)){
+        for (j in 1:ncol(m.bootfutureData)){
           if ((i+j-1) == a){
-            aux <- sum(aux, m.bootfutureData[i, j, boots], na.rm = TRUE)
+            aux <- sum(aux, m.bootfutureData[i, j], na.rm = TRUE)
           }
         }
       }
