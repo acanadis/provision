@@ -1,14 +1,17 @@
 #' @name separateProvision
 #' @title Calculate provisions using separation methods of Taylor.
 #' @description Calculate provisions using separation methods of Taylor.
+#' @usage separateProvision(lossData, freqData,
+#' modelSep = "arithmetic", lambdaK = 0,
+#' B = 1000, seed = NULL)
 #' @param lossData Matrix of incremental losses \eqn{Cij},
 #' for \eqn{i = 1,...,t} origin years (rows) and for \eqn{j = 1,...,t}
 #' development years (columns); filled with \code{NAs} for \eqn{i + j > t}.
 #' @param freqData Vector with the claim numbers by origin year \eqn{i}
 #' for \eqn{i = 1,...t}.
-#' @param modelSep Model to be used, can be \code{arithmetic} or \code{geometric}.
-#' @param lambdaK Percentage of the trend in the inflation index.
-#' @param B Number of iterations to perform in the bootstrapping procedure.
+#' @param modelSep Model to be used, can be \code{arithmetic} or \code{geometric}. Defaults to "arithmetic".
+#' @param lambdaK Percentage of the trend in the inflation index. Defaults to 0.
+#' @param B Number of iterations to perform in the bootstrapping procedure. Defaults to 1000.
 #' @param seed Seed to make bootstrap reproducible.
 #' @return A list of 5 elements with:
 #' \itemize{
@@ -55,8 +58,8 @@ separateProvision <- function(lossData, freqData,
   t <- nrow(lossData)
   oy <- rep(1:t,t:1)
   dy <- sequence(t:1)
-  labelsoy <- paste0("oy", 1:t)
-  labelsdy <- paste0("dy", 1:t)
+  labelsoy <- paste0("oy", 0:(t-1))
+  labelsdy <- paste0("dy", 0:(t-1))
   colnames(lossData) <- labelsdy
   rownames(lossData) <- labelsoy
 
@@ -73,8 +76,8 @@ separateProvision <- function(lossData, freqData,
                                  rep(times = i-1, NA))
   }
 
-  labelsoy <- paste0("oy", 1:t)
-  labelsdy <- paste0("dy", 1:t)
+  labelsoy <- paste0("oy", 0:(t-1))
+  labelsdy <- paste0("dy", 0:(t-1))
   colnames(m.average.loss.data) <- labelsdy
   rownames(m.average.loss.data) <- labelsoy
 
@@ -336,14 +339,14 @@ separateProvision <- function(lossData, freqData,
     # Total reserve
     totresfutureboot[boots] <- sum(oyresfutureboot[boots, ])
     # Vector of future payments
-    a <- ncol(triangglmboot) + 1
+    a <- ncol(m.bootfutureData) + 1
     fpv2 <- NULL
-    for (z in 1:(nrow(triangglmboot)-1)){
+    for (z in 1:(nrow(m.bootfutureData)-1)){
       aux <- 0
-      for (i in 1:nrow(triangglmboot)){
-        for (j in 1:ncol(triangglmboot)){
+      for (i in 1:nrow(m.bootfutureData)){
+        for (j in 1:ncol(m.bootfutureData)){
           if ((i+j-1) == a){
-            aux <- sum(aux, triangglmboot[i, j, boots], na.rm = TRUE)
+            aux <- sum(aux, m.bootfutureData[i, j], na.rm = TRUE)
           }
         }
       }
@@ -381,7 +384,7 @@ separateProvision <- function(lossData, freqData,
                                     c("Latest", "dev.to.date", "Ultimate",
                                       "IBNR", "IBNR.mean", "PredErr.Abs", "CV",
                                       "IBNR.quantile.75", "IBNR.quantile.95",
-                                      "IBNR.quantile.99")))
+                                      "IBNR.quantile.995")))
   aux <- array(0, c(t, t, B))
   auxup <- triangboot; auxdn <- triangglmboot
   auxup[is.na(auxup)] <- 0; auxdn[is.na(auxdn)] <- 0
@@ -419,8 +422,8 @@ separateProvision <- function(lossData, freqData,
                     quantile(totresboot, 0.75))
   out.sum[, 9] <- c(0, apply(oyresboot, 2, quantile, 0.95),
                     quantile(totresboot, 0.95))
-  out.sum[, 10] <- c(0, apply(oyresboot, 2, quantile, 0.99),
-                     quantile(totresboot, 0.99))
+  out.sum[, 10] <- c(0, apply(oyresboot, 2, quantile, 0.995),
+                     quantile(totresboot, 0.995))
   out.sum[is.nan(out.sum)] <- 0
 
   # 8.2. Summary - CY ----
@@ -429,7 +432,7 @@ separateProvision <- function(lossData, freqData,
                      dimnames = list(c(labelscy, "TOTAL.cy"),
                                      c("IBNR", "IBNR.mean", "PredErr.Abs", "CV",
                                        "IBNR.quantile.75", "IBNR.quantile.95",
-                                       "IBNR.quantile.99")))
+                                       "IBNR.quantile.995")))
   out.sum2[, 1] <- c(fpv, sum(fpv))
   out.sum2[, 2] <- c(apply(fpvfutureboot,2,mean), sum(apply(fpvfutureboot,2,mean)))
   out.sum2[, 3] <- c(apply(abs(pefpv),2,mean), sum(apply(abs(pefpv),2,mean)))
@@ -438,8 +441,8 @@ separateProvision <- function(lossData, freqData,
                      quantile(totresfutureboot, 0.75, na.rm = TRUE))
   out.sum2[, 6] <- c(apply(fpvfutureboot, 2, quantile, 0.95, na.rm = TRUE),
                      quantile(totresfutureboot, 0.95, na.rm = TRUE))
-  out.sum2[, 7] <- c(apply(fpvfutureboot, 2, quantile, 0.99, na.rm = TRUE),
-                     quantile(totresfutureboot, 0.99, na.rm = TRUE))
+  out.sum2[, 7] <- c(apply(fpvfutureboot, 2, quantile, 0.995, na.rm = TRUE),
+                     quantile(totresfutureboot, 0.995, na.rm = TRUE))
 
   out.sum2[is.nan(out.sum2)] <- 0
 
@@ -460,6 +463,7 @@ separateProvision <- function(lossData, freqData,
                               "fpv" = fpv,
                               "fpvfutureboot" = fpvfutureboot,
                               "increm.tri" = increm.tri,
+                              "triangboot" = triangboot,
                               "lambdafut" = lambdafut))
   }
   if (modelSep == "geometric"){
@@ -478,6 +482,7 @@ separateProvision <- function(lossData, freqData,
                               "fpv" = fpv,
                               "fpvfutureboot" = fpvfutureboot,
                               "increm.tri" = increm.tri,
+                              "triangboot" = triangboot,
                               "lambdafut" = lambdafut))
   }
   class(res) <- "sepprov"

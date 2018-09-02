@@ -49,13 +49,12 @@ results <- function(triang, glm.res){
 
 
 # Create new triangle with missing data ----
-# !!!! la fem servir?
 #' @name newNA
 #' @noRd
 #' @keywords internal
 newNA <- function(triangle){
   a <- 1
-  for(i in 3:ncol(triangle)){ # !!!! 3? 2+1? verificar.
+  for(i in 3:ncol(triangle)){
     for(j in 1:a){
       triangle[i, (ncol(triangle)-a+1):ncol(triangle)] <- NA
     }
@@ -231,7 +230,7 @@ summary.glmprov <- function(object, output = "console", ...){
                                      ifelse(object$params$fam == "3",
                                             "Inverse gaussian",
                                             paste0("variance power ", object$params$fam))))))
-  link <- ifelse(object$params$link == 0, "logit", object$params$link)
+  link <- ifelse(object$params$link == 0, "logarithmic", object$params$link)
   if (output == "console"){
     cat("==== Summary of glmProvision ====\n\n")
     cat(paste0("peMethod = ", object$params$method,"\n"))
@@ -276,7 +275,6 @@ summary.glmprov <- function(object, output = "console", ...){
 #' @param ... other arguments ignored (for compatibility with generic)
 #' @keywords internal
 #' @method summary pdr
-#' @export
 #' @examples
 #' res <- glmProvision(TaylorData$lossData)
 #' res <- PDR(res)
@@ -296,6 +294,139 @@ summary.pdr <- function(object, output = "console", ...){
   }
 }
 
+# Plot separateProvision ----
+#' @noRd
+#' @rdname plot.sepprov
+#' @description Displays plots of a separateProvision object
+#' @param object separateProvision object to plot
+#' @param log Apply logarithm to latest claims cost values
+#' @param plot Plot the final results or retrieve the ggplot object
+#' @param ... other arguments ignored (for compatibility with generic)
+#' @keywords internal
+#' @method plot sepprov
+#' @export
+#' @importFrom magrittr %>%
+#' @importFrom dplyr group_by summarise
+#' @importFrom reshape2 melt
+#' @import ggplot2
+#' @include utilities.R
+
+devtools::use_package("ggplot2")
+
+plot.sepprov <- function(x, which.plot = 1:4,
+                         log.latest = FALSE, onepage = FALSE, ...){
+  if (!is.numeric(which.plot) || any(which.plot < 1) || any(which.plot > 4)){
+    stop("The value of which.plot must be in 1:4\n")
+  }
+  object <- x
+  # Histogram - IBNR
+  sum.test <- NULL
+  test <- NULL
+  for (boots in 1:dim(object$params$increm.tri)[3]){
+    aux <- object$params$increm.tri[, , boots]
+    for (i in 1:nrow(aux)){
+      test <- c(test, aux[i, ncol(aux)] - aux[i, (ncol(aux)-i+1)])
+    }
+    sum.test <- c(sum.test, sum(test))
+    test <- NULL
+  }
+  q1 <- ggplot(data = data.frame(x = sum.test), aes(x)) +
+    geom_histogram(bins = 25, fill = "lightgrey") +
+    labs(title = "Histogram of total claims cost",
+         x = "Total claims cost", y = "Frequency") +
+    theme_bw() +
+    theme(panel.grid = element_blank())
+  rm(test, sum.test, boots)
+
+  # Boxplot - Latest - OY
+  latest <- matrix(0, ncol = nrow(object$params$increm.tri),
+                   nrow = dim(object$params$increm.tri)[3])
+  for (i in 1:dim(object$params$increm.tri)[3]){
+    latest[i, ] <- ObtainMDiagonal(object$params$triangboot[, , i])
+  }
+  aux <- reshape2::melt(latest)
+  colnames(aux) <- c("B", "oy", "latest")
+  aux$oy <- aux$oy-1
+  aux$oy <- factor(aux$oy)
+
+  aux.pt <- data.frame(Value = ObtainMDiagonal(object$triangle),
+                       Index = c(1:(ncol(object$triangle))),
+                       stringsAsFactors = FALSE)
+  if (log.latest == TRUE){
+    aux$latest <- log(aux$latest)
+    aux.pt$Value  <- log(aux.pt$Value)
+  }
+  ylims <- c(min(aux.pt$Value, aux$latest), max(aux.pt$Value, aux$latest))
+  q2 <- ggplot(data = aux, aes(x = oy, y = latest)) +
+    geom_boxplot(color = "lightgrey") +
+    ylim(ylims) +
+    geom_point(data = aux.pt, mapping = aes(x = Index, y = Value),
+               inherit.aes = FALSE,
+               color = "red") +
+    theme_bw() +
+    theme(panel.grid = element_blank())
+  if (log.latest == TRUE){
+    q2 <- q2 +
+      labs(title = "Latest actual incremental claim against simulated values",
+           x = "Origin year", y = "log(Latest incremental claims)")
+  } else {
+    q2 <- q2 +
+      labs(title = "Latest actual incremental claim against simulated values",
+           x = "Origin year", y = "Latest incremental claims")
+  }
+  rm(latest, i, aux, aux.pt, ylims)
+
+  # Boxplot - Ultimate
+  ultimate <- matrix(0, ncol = nrow(object$params$increm.tri),
+                     nrow = dim(object$params$increm.tri)[3])
+  for (i in 1:dim(object$params$increm.tri)[3]){
+    ultimate[i, ] <- object$params$increm.tri[, ncol(object$params$increm.tri), i]
+  }
+  aux <- reshape2::melt(ultimate)
+  colnames(aux) <- c("B", "oy", "ultimate")
+  aux$oy <- aux$oy - 1
+  aux$oy <- factor(aux$oy)
+  auxoy <- aux %>% dplyr::group_by(oy) %>% dplyr::summarise(mu = mean(ultimate))
+
+  q3 <- ggplot(data = aux, aes(x = oy, y = ultimate)) +
+    geom_boxplot(color = "lightgrey") +
+    geom_point(data = auxoy, mapping = aes(x = oy, y = mu),
+               inherit.aes = FALSE,
+               color = "red") +
+    labs(title = "Simulated ultimate claims cost",
+         x = "Origin year", y = "Ultimate claims costs") +
+    theme_bw() +
+    theme(panel.grid = element_blank())
+  rm(ultimate, i, aux, auxoy)
+
+  # Boxplot - FPV - CY
+  aux <- object$params$fpvfutureboot
+  colnames(aux) <- c(as.numeric(1:ncol(aux) + ncol(object$params$increm.tri)))
+  aux <- reshape2::melt(aux)
+  aux.pt <- data.frame(Value = object$params$fpv,
+                       Index = c(1:ncol(object$params$fpvfutureboot) +
+                                   ncol(object$params$increm.tri)),
+                       stringsAsFactors = FALSE)
+  q4 <- ggplot(data = aux, aes(x = as.factor(Var2), y = value)) +
+    geom_boxplot(color = "lightgrey") +
+    geom_point(data = aux.pt, mapping = aes(x = as.factor(Index), y = Value),
+               inherit.aes = FALSE,
+               color = "red") +
+    labs(title = "Actual future payments per calendar year against simulated values",
+         x = "Calendar year", y = "Future payments") +
+    theme_bw() +
+    theme(panel.grid = element_blank())
+  rm(aux, aux.pt)
+  if (onepage == TRUE){
+    res <- gridExtra::arrangeGrob(q1, q2, q3, q4, nrow = 2, ncol = 2)
+    grid::grid.draw(res)
+  } else {
+    if (any(which.plot == 1)) { print(q1) }
+    if (any(which.plot == 2)) { print(q2) }
+    if (any(which.plot == 3)) { print(q3) }
+    if (any(which.plot == 4)) { print(q4) }
+  }
+}
 
 # SetClasses ----
 #' @noRd
@@ -316,6 +447,6 @@ methods::setMethod(f = "summary", signature = "sepprov",
                    definition = summary.sepprov)
 methods::setMethod(f = "summary", signature = "pdr",
                    definition = summary.pdr)
-
 # Plot method
-
+methods::setMethod(f = "plot", signature = "sepprov",
+                   definition = plot.sepprov)

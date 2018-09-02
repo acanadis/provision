@@ -3,18 +3,22 @@
 \name{glmProvision}
 \alias{glmProvision}
 \title{Calculate provisions using glm modeling.}
+\usage{
+glmProvision(lossData, peMethod = "formula",
+fam = 1, link = 0, B = 1000, seed = NULL)
+}
 \arguments{
 \item{lossData}{Matrix of incremental losses \eqn{Cij},
 for \eqn{i = 1,...,t} origin years (rows) and for \eqn{j = 1,...,t}
 development years (columns); filled with \code{NAs} for \eqn{i + j > t}.}
 
-\item{peMethod}{Method to be used, can be \code{formula} or \code{bootstrap}.}
+\item{peMethod}{Method to be used, can be \code{formula} or \code{bootstrap}. Defaults to "formula".}
 
-\item{fam}{Index of power variance function as defined in \code{tweedie}. Defaults to normal.}
+\item{fam}{Index of power variance function as defined in \code{tweedie}. Defaults to Poisson.}
 
-\item{link}{Index of power link function as defined in \code{tweedie}. Defaults to log-link.}
+\item{link}{Index of power link function as defined in \code{tweedie}. Defaults to logarithmic link.}
 
-\item{B}{Number of iterations to perform in the bootstrapping procedure.}
+\item{B}{Number of iterations to perform in the bootstrapping procedure. Defaults to 1000.}
 
 \item{seed}{Seed to make bootstrap reproducible.}
 }

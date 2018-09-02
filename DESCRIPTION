@@ -20,11 +20,12 @@ Collate:
     'TaylorData.R'
     'glmProvision.R'
     'pV.R'
-    'plot_sepprov.R'
     'separateProvision.R'
 Imports: statmod,
     methods,
     tweedie,
     xtable,
     dplyr,
-    reshape2
+    magrittr,
+    reshape2,
+    ggplot2

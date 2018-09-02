@@ -1,13 +1,15 @@
 #' @name glmProvision
 #' @title Calculate provisions using glm modeling.
 #' @description Calculate provision using glm modeling.
+#' @usage glmProvision(lossData, peMethod = "formula",
+#' fam = 1, link = 0, B = 1000, seed = NULL)
 #' @param lossData Matrix of incremental losses \eqn{Cij},
 #' for \eqn{i = 1,...,t} origin years (rows) and for \eqn{j = 1,...,t}
 #' development years (columns); filled with \code{NAs} for \eqn{i + j > t}.
-#' @param peMethod Method to be used, can be \code{formula} or \code{bootstrap}.
-#' @param fam Index of power variance function as defined in \code{tweedie}. Defaults to normal.
-#' @param link Index of power link function as defined in \code{tweedie}. Defaults to log-link.
-#' @param B Number of iterations to perform in the bootstrapping procedure.
+#' @param peMethod Method to be used, can be \code{formula} or \code{bootstrap}. Defaults to "formula".
+#' @param fam Index of power variance function as defined in \code{tweedie}. Defaults to Poisson.
+#' @param link Index of power link function as defined in \code{tweedie}. Defaults to logarithmic link.
+#' @param B Number of iterations to perform in the bootstrapping procedure. Defaults to 1000.
 #' @param seed Seed to make bootstrap reproducible.
 #' @return A list of 5 elements with:
 #' \itemize{
@@ -281,9 +283,9 @@ glmProvision <- function(lossData,
     out.sum <- matrix(NA, ncol = 10, nrow = t+1,
                       dimnames = list(c(rownames(lossData), "TOTAL"),
                                       c("Latest.mean", "dev.to.date", "Ultimate.mean",
-                                        "IBNR", "IBNR.mean", "PredErr.Abs", "CV",
+                                        "IBNR", "IBNR.mean", "PredErr", "CV",
                                         "IBNR.quantile.75", "IBNR.quantile.95",
-                                        "IBNR.quantile.99")))
+                                        "IBNR.quantile.995")))
 
     ## Latest
     latest <- matrix(NA, ncol = nrow(lossData), nrow = B)
@@ -304,23 +306,23 @@ glmProvision <- function(lossData,
 
     out.sum[, 4] <- c(0, oyres, sum(oyres))
     out.sum[, 5] <- c(0, apply(reservesorig,2,mean), sum(apply(reservesorig,2,mean)))
-    out.sum[, 6] <- c(0, abs(PEbsorig), sum(abs(PEbsorig)))
+    out.sum[, 6] <- c(0, abs(PEbsorig), PEbs)
     out.sum[, 7] <- out.sum[,6]/out.sum[,4]
     out.sum[, 8] <- c(0, apply(reservesorig, 2, quantile, 0.75, na.rm = TRUE),
                      quantile(sum(reservesorig), 0.75, na.rm = TRUE))
     out.sum[, 9] <- c(0, apply(reservesorig, 2, quantile, 0.95, na.rm = TRUE),
                       quantile(sum(reservesorig), 0.95, na.rm = TRUE))
-    out.sum[, 10] <- c(0, apply(reservesorig, 2, quantile, 0.99, na.rm = TRUE),
-                      quantile(sum(reservesorig), 0.99, na.rm = TRUE))
+    out.sum[, 10] <- c(0, apply(reservesorig, 2, quantile, 0.995, na.rm = TRUE),
+                      quantile(sum(reservesorig), 0.995, na.rm = TRUE))
     out.sum[is.nan(out.sum)] <- 0
 
     ## Calendar year
     labelscy <- paste0("cy", (t+1):(t+ncol(lossData)-1))
     out.sum2 <- matrix(NA, ncol = 7, nrow = t,
                        dimnames = list(c(labelscy, "TOTAL.cy"),
-                                       c("IBNR", "IBNR.mean", "PredErr.Abs", "CV",
+                                       c("IBNR", "IBNR.mean", "PredErr", "CV",
                                          "IBNR.quantile.75", "IBNR.quantile.95",
-                                         "IBNR.quantile.99")))
+                                         "IBNR.quantile.995")))
   out.sum2[, 1] <- c(fpv, sum(fpv))
   out.sum2[, 2] <- c(apply(reservescal,2,mean), sum(apply(reservescal,2,mean)))
   out.sum2[, 3] <- c(abs(PEbscal), sum(abs(PEbscal)))
@@ -329,8 +331,8 @@ glmProvision <- function(lossData,
                      quantile(sum(reservescal), 0.75, na.rm = TRUE))
   out.sum2[, 6] <- c(apply(reservescal, 2, quantile, 0.95, na.rm = TRUE),
                      quantile(sum(reservescal), 0.95, na.rm = TRUE))
-  out.sum2[, 7] <- c(apply(reservescal, 2, quantile, 0.99, na.rm = TRUE),
-                     quantile(sum(reservescal), 0.99, na.rm = TRUE))
+  out.sum2[, 7] <- c(apply(reservescal, 2, quantile, 0.995, na.rm = TRUE),
+                     quantile(sum(reservescal), 0.995, na.rm = TRUE))
 
   out.sum2[is.nan(out.sum2)] <- 0
   }
@@ -343,7 +345,7 @@ glmProvision <- function(lossData,
     out.sum <- matrix(NA, ncol = 6, nrow = t+1,
                       dimnames = list(c(rownames(lossData), "TOTAL"),
                                       c("Latest", "dev.to.date", "Ultimate",
-                                        "IBNR", "IBNR.PredErr.Abs", "CV")))
+                                        "IBNR", "IBNR.PredErr", "CV")))
     ## Latest
     out.sum[, 1] <- c(ObtainMDiagonal(increm.tri[, ,1]),
                       sum(ObtainMDiagonal(increm.tri[, , 1])))
@@ -355,7 +357,7 @@ glmProvision <- function(lossData,
     ## IBNR
     out.sum[, 4] <- c(0, oyres, totres)
     ## PE
-    out.sum[, 5] <- c(0, abs(PEfororig), sum(abs(PEfororig)))
+    out.sum[, 5] <- c(0, abs(PEfororig), PEfor)
     ## CV
     out.sum[, 6] <- out.sum[, 5]/out.sum[, 4]
     out.sum[is.nan(out.sum)] <- 0
@@ -364,7 +366,7 @@ glmProvision <- function(lossData,
     labelscy <- paste0("cy", (t+1):(t+ncol(lossData)-1))
     out.sum2 <- matrix(NA, ncol = 3, nrow = t,
                        dimnames = list(c(labelscy, "TOTAL.cy"),
-                                       c("IBNR", "PredErr.Abs", "CV")))
+                                       c("IBNR", "PredErr", "CV")))
     ## IBNR
     out.sum2[, 1] <- c(fpv, sum(fpv))
     ## Pred. Error

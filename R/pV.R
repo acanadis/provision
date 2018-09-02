@@ -1,6 +1,7 @@
 #' @name pV
 #' @title Present value of the future payments vector.
 #' @description Calculate the present value of the future payments vector.
+#' @usage pV(object, yieldCurve)
 #' @param object Output from \code{separateProvision} or \code{glmProvision} functions.
 #' @param yieldCurve Vector with the interest rate for the following years.
 #' @return A list of 4 elements with:
@@ -41,11 +42,12 @@ pV <- function(object, yieldCurve){
     fcont[i] <- (1 - ((1+yieldCurve[i])^(-1)))/log(1+yieldCurve[i])
   }
   continuouspayments <- rep(1,length(yieldCurve))
-  for (i in 2:length(yieldCurve)){
-    continuouspayments[i]<- (1+yieldCurve[i])^(-i+1)
+  for (i in 1:length(yieldCurve)){
+    continuouspayments[i]<- object$params$fpv[i]*fcont[i]*(1+yieldCurve[i])^(-i+1)
   }
-  continuouspayments <- object$fpv * continuouspayments * fcont
+
   totcontpay <- sum(continuouspayments)
+
 
   # 4. Results object ----
   res <- list("discretepayments" = discretepayments,
