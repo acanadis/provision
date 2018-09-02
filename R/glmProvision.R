@@ -285,7 +285,7 @@ glmProvision <- function(lossData,
                                       c("Latest.mean", "dev.to.date", "Ultimate.mean",
                                         "IBNR", "IBNR.mean", "PredErr", "CV",
                                         "IBNR.quantile.75", "IBNR.quantile.95",
-                                        "IBNR.quantile.99")))
+                                        "IBNR.quantile.995")))
 
     ## Latest
     latest <- matrix(NA, ncol = nrow(lossData), nrow = B)
@@ -322,7 +322,7 @@ glmProvision <- function(lossData,
                        dimnames = list(c(labelscy, "TOTAL.cy"),
                                        c("IBNR", "IBNR.mean", "PredErr", "CV",
                                          "IBNR.quantile.75", "IBNR.quantile.95",
-                                         "IBNR.quantile.99")))
+                                         "IBNR.quantile.995")))
   out.sum2[, 1] <- c(fpv, sum(fpv))
   out.sum2[, 2] <- c(apply(reservescal,2,mean), sum(apply(reservescal,2,mean)))
   out.sum2[, 3] <- c(abs(PEbscal), sum(abs(PEbscal)))

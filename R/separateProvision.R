@@ -384,7 +384,7 @@ separateProvision <- function(lossData, freqData,
                                     c("Latest", "dev.to.date", "Ultimate",
                                       "IBNR", "IBNR.mean", "PredErr.Abs", "CV",
                                       "IBNR.quantile.75", "IBNR.quantile.95",
-                                      "IBNR.quantile.99")))
+                                      "IBNR.quantile.995")))
   aux <- array(0, c(t, t, B))
   auxup <- triangboot; auxdn <- triangglmboot
   auxup[is.na(auxup)] <- 0; auxdn[is.na(auxdn)] <- 0
@@ -432,7 +432,7 @@ separateProvision <- function(lossData, freqData,
                      dimnames = list(c(labelscy, "TOTAL.cy"),
                                      c("IBNR", "IBNR.mean", "PredErr.Abs", "CV",
                                        "IBNR.quantile.75", "IBNR.quantile.95",
-                                       "IBNR.quantile.99")))
+                                       "IBNR.quantile.995")))
   out.sum2[, 1] <- c(fpv, sum(fpv))
   out.sum2[, 2] <- c(apply(fpvfutureboot,2,mean), sum(apply(fpvfutureboot,2,mean)))
   out.sum2[, 3] <- c(apply(abs(pefpv),2,mean), sum(apply(abs(pefpv),2,mean)))
