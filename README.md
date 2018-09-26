@@ -1,9 +1,9 @@
 # provision
 
-The provision R package for claim reserving. 
+The provision R package for claims reserving. 
 
 ## Overview
-This package enables to calculate provisions using GLM models. 
+The \code{provision} package enables the user to calculate loss reserves by using generalized linear models.
 
 ## Installation
 
@@ -13,7 +13,7 @@ To install the package two options are possible:
   + Installing the latest version from github, as the following code shows: 
 
 ``` r
-# install.packages("devtools")
+install.packages("devtools")
 devtools::install_github("acanadis/provision")
 ```
 
