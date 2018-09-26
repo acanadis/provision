@@ -1,11 +1,11 @@
 #' @name glmProvision
-#' @title Calculate provisions using glm modeling.
-#' @description Calculate provision using glm modeling.
+#' @title Claims reserving using glm modeling.
+#' @description Claims reserving using glm modeling.
 #' @usage glmProvision(lossData, peMethod = "formula",
 #' fam = 1, link = 0, B = 1000, seed = NULL)
-#' @param lossData Matrix of incremental losses \eqn{Cij},
-#' for \eqn{i = 1,...,t} origin years (rows) and for \eqn{j = 1,...,t}
-#' development years (columns); filled with \code{NAs} for \eqn{i + j > t}.
+#' @param lossData Matrix of incremental losses \eqn{cij},
+#' for \eqn{i = 1,...,k} origin years (rows) and for \eqn{j = 1,...,k}
+#' development years (columns); filled with \code{NAs} for \eqn{i + j > k}.
 #' @param peMethod Method to be used, can be \code{formula} or \code{bootstrap}. Defaults to "formula".
 #' @param fam Index of power variance function as defined in \code{tweedie}. Defaults to Poisson.
 #' @param link Index of power link function as defined in \code{tweedie}. Defaults to logarithmic link.
@@ -16,7 +16,7 @@
 #'   \item \code{triangle} Input data (lossData).
 #'   \item \code{glm.triangle} Fitted values by \code{glm} modeling.
 #'   \item \code{model} \code{glm} model.
-#'   \item \code{bootstrap.losses} (Only with \code{peMethod} = "bootsrap") Three-dimensional
+#'   \item \code{bootstrap.losses} (Only with \code{peMethod} = "bootstrap") Three-dimensional
 #'    array of lower triangles from bootstrap procedure.
 #'   \item \code{summary} Summary table.
 #'   \item \code{params} List of output parameters.
