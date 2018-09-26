@@ -1,6 +1,6 @@
 #' @name PDR
-#' @title Claim development results.
-#' @description Calculate claim development results.
+#' @title Claims development results (CDR).
+#' @description Calculate claims development results.
 #' @usage PDR(object, probs = c(0.75, 0.95, 0.995))
 #' @param object Output from \code{separateProvision} or \code{glmProvision} functions.
 #' @param probs Quantiles of the CDR distribution.
@@ -15,7 +15,7 @@
 #' }
 #' @examples
 #' data("TaylorData")
-#' res <- separateProvision(TaylorData$lossData, TaylorData$freqData)
+#' res <--separateProvision(TaylorData$lossData, TaylorData$freqData)
 #' PDR(res)
 #' @export
 #' @importFrom stats quantile
