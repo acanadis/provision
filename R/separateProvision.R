@@ -1,14 +1,14 @@
 #' @name separateProvision
-#' @title Calculate provisions using separation methods of Taylor.
-#' @description Calculate provisions using separation methods of Taylor.
+#' @title Claims reserving using separation methods of Taylor.
+#' @description Claims reserving using separation methods of Taylor.
 #' @usage separateProvision(lossData, freqData,
 #' modelSep = "arithmetic", lambdaK = 0,
 #' B = 1000, seed = NULL)
-#' @param lossData Matrix of incremental losses \eqn{Cij},
-#' for \eqn{i = 1,...,t} origin years (rows) and for \eqn{j = 1,...,t}
-#' development years (columns); filled with \code{NAs} for \eqn{i + j > t}.
-#' @param freqData Vector with the claim numbers by origin year \eqn{i}
-#' for \eqn{i = 1,...t}.
+#' @param lossData Matrix of incremental losses \eqn{cij},
+#' for \eqn{i = 1,...,k} origin years (rows) and for \eqn{j = 1,...,k}
+#' development years (columns); filled with \code{NAs} for \eqn{i + j > k}.
+#' @param freqData Vector with the claims number by origin year \eqn{i}
+#' for \eqn{i = 1,...k}.
 #' @param modelSep Model to be used, can be \code{arithmetic} or \code{geometric}. Defaults to "arithmetic".
 #' @param lambdaK Percentage of the trend in the inflation index. Defaults to 0.
 #' @param B Number of iterations to perform in the bootstrapping procedure. Defaults to 1000.
