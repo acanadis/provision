@@ -3,7 +3,7 @@
 The provision R package for claims reserving. 
 
 ## Overview
-The \code{provision} package enables the user to calculate loss reserves by using generalized linear models.
+The provision package enables the user to calculate loss reserves by using generalized linear models.
 
 ## Installation
 
